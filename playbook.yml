@@ -1,20 +1,36 @@
-- name : Configure Docker on EC2 Instances
-  hosts : all
-  become: true
-  connection : ssh
-  tasks : 
-  - name: updating apt
-    command : sudo apt-get update
+apiVersion: apps/v1
+kind: Deployment # Kubernetes resource kind we are creating
+metadata:
+  name: star-agile-health-care-deployment
+spec:
+  selector:
+    matchLabels:
+      app: star-agile-health-care
+  replicas: 2 # Number of replicas that will be created for this deployment
+  template:
+    metadata:
+      labels:
+        app: fiananceme
+    spec:
+      containers:
+        - name: star-agile-health-care
+          image: amardeepmalale96/star-agile-health-care # Image that will be used to containers in the cluster
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8070 # The port that the container is running on in the cluster
 
-  - name : Install Docker
-    command : sudo apt-get install -y docker.io
-    become : yes
-    become_user : root
 
-  - name : Start Docker Service
-    command : sudo systemctl start docker
-    become : yes
-    become_user : root
+---
 
-  - name: Deploy Docker Container
-    command: docker run -itd -p 8084:8082 shubhamkushwah123/medicure:1.0
+apiVersion: v1 # Kubernetes API version
+kind: Service # Kubernetes resource kind we are creating
+metadata: # Metadata of the resource kind we are creating
+  name: star-agile-health-care-ssvc
+spec:
+  selector:
+    app: star-agile-health-care
+  ports:
+    - protocol: "TCP"
+      port: 8070 # The port that the service is running on in the cluster
+      targetPort: 8070 # The port exposed by the service
+  type: LoadBalancer # type of the service.
