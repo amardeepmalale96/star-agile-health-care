@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: fiananceme
+        app: star-agile-health-care
     spec:
       containers:
         - name: star-agile-health-care
